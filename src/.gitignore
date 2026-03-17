@@ -1,0 +1,5 @@
+.env
+output_agent/
+__pycache__/
+*.pyc
+.DS_Store
