@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automotive Europe — Trend Dashboard</title>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f4f8;
+    color: #1a1a2e;
+  }
+  header {
+    background: linear-gradient(135deg, #03045e, #0077b6);
+    color: white;
+    padding: 28px 40px 20px;
+  }
+  header h1 { font-size: 1.7rem; font-weight: 700; letter-spacing: 0.5px; }
+  header p  { font-size: 0.9rem; opacity: 0.8; margin-top: 4px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+  .controls {
+    display: flex; align-items: center; gap: 16px;
+    background: white; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    flex-wrap: wrap;
+  }
+  .controls label { font-weight: 600; font-size: 0.9rem; color: #03045e; }
+  select {
+    padding: 8px 14px; border-radius: 6px;
+    border: 1.5px solid #0077b6; font-size: 0.95rem;
+    color: #03045e; background: #f8fbff; cursor: pointer;
+    min-width: 220px;
+  }
+  select:focus { outline: none; border-color: #023e8a; }
+  .chart-card {
+    background: white; border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 20px; margin-bottom: 20px;
+  }
+  #plotly-chart { width: 100%; height: 480px; }
+  .threshold-box {
+    background: #f8fbff; border-left: 4px solid #0077b6;
+    border-radius: 6px; padding: 14px 18px;
+    margin-bottom: 20px; font-size: 0.88rem; line-height: 1.6;
+  }
+  .threshold-box h3 {
+    font-size: 0.95rem; color: #03045e;
+    margin-bottom: 6px; font-weight: 700;
+  }
+  .threshold-box .badges {
+    display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .badge {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+  }
+  .badge-fixed  { background: #fde8ea; color: #c0392b; }
+  .badge-median { background: #fef3e2; color: #d35400; }
+  .badge-none   { background: #e8f4fd; color: #0077b6; }
+  .status-table {
+    width: 100%; border-collapse: collapse; font-size: 0.87rem;
+    margin-top: 16px;
+  }
+  .status-table th {
+    background: #03045e; color: white;
+    padding: 8px 12px; text-align: left; font-weight: 600;
+  }
+  .status-table td { padding: 7px 12px; border-bottom: 1px solid #e8eef5; }
+  .status-table tr:last-child td { border-bottom: none; }
+  .ok   { color: #1a7a4a; font-weight: 600; }
+  .warn { color: #c0392b; font-weight: 600; }
+  .na   { color: #aaa; }
+  footer {
+    text-align: center; font-size: 0.78rem; color: #888;
+    padding: 20px; margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚗 Automotive Europe — Trend Dashboard</h1>
+  <p>VW Group · Stellantis · Mercedes-Benz · BMW · Renault · Porsche AG · Volvo Cars · TRATON · Iveco</p>
+</header>
+
+<div class="container">
+
+  <div class="controls">
+    <label for="indicator-select">Indicatore:</label>
+    <select id="indicator-select" onchange="updateChart()">
+    </select>
+  </div>
+
+  <div class="chart-card">
+    <div id="plotly-chart"></div>
+  </div>
+
+  <div class="threshold-box" id="threshold-box"></div>
+
+  <div class="chart-card">
+    <table class="status-table" id="status-table">
+      <thead>
+        <tr>
+          <th>Azienda</th>
+          <th>Ultimo anno</th>
+          <th>Soglia fissa</th>
+          <th>vs Mediana gruppo</th>
+          <th>Stato</th>
+        </tr>
+      </thead>
+      <tbody id="status-tbody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  Dati: Yahoo Finance via yfinance · Solo uso educativo/personale
+</footer>
+
+<script>
+const DATA       = {"Revenue (M)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [282836.0, 307394.0, 350018.0, 402836.0], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [513983.0, 574785.0, 637959.0, 716924.0], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [116609.0, 134902.0, 164501.0, 200966.0], "color": "#0077b6"}], "median": 402836.0, "fixed": null, "direction": null, "label": null, "note": null}, "EBIT (M)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [74842.0, 84293.0, 112390.0, 129039.0], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [12248.0, 36852.0, 68593.0, 79975.0], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [28944.0, 46751.0, 69380.0, 83276.0], "color": "#0077b6"}], "median": 83276.0, "fixed": null, "direction": null, "label": null, "note": null}, "EBITDA (M)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [88317.0, 96239.0, 127701.0, 150175.0], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [54169.0, 85515.0, 121388.0, 145731.0], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [37630.0, 57929.0, 84878.0, 101892.0], "color": "#0077b6"}], "median": 145731.0, "fixed": null, "direction": null, "label": null, "note": null}, "Net Income (M)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [59972.0, 73795.0, 100118.0, 132170.0], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [-2722.0, 30425.0, 59248.0, 77670.0], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [23200.0, 39098.0, 62360.0, 60458.0], "color": "#0077b6"}], "median": 77670.0, "fixed": null, "direction": null, "label": null, "note": null}, "EBIT Margin (%)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [26.46, 27.42, 32.11, 32.03], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [2.38, 6.41, 10.75, 11.16], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [24.82, 34.66, 42.18, 41.44], "color": "#0077b6"}], "median": 32.03, "fixed": 5.0, "direction": "above_good", "label": "Soglia min. 5%", "note": "Nel settore automotive un EBIT Margin superiore al 5% è considerato la soglia minima di salute operativa. Sotto questa soglia il core business fatica a generare redditività sufficiente a coprire capex e oneri finanziari tipici del settore."}, "EBITDA Margin (%)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [31.23, 31.31, 36.48, 37.28], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [10.54, 14.88, 19.03, 20.33], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [32.27, 42.94, 51.6, 50.7], "color": "#0077b6"}], "median": 37.28, "fixed": null, "direction": null, "label": null, "note": null}, "Net Margin (%)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [21.2, 24.01, 28.6, 32.81], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [-0.53, 5.29, 9.29, 10.83], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [19.9, 28.98, 37.91, 30.08], "color": "#0077b6"}], "median": 30.08, "fixed": 3.0, "direction": "above_good", "label": "Soglia min. 3%", "note": "Nel settore automotive i margini netti sono strutturalmente compressi. Una soglia del 3% rappresenta il livello minimo al di sopra del quale si considera che l'azienda stia generando profitto netto in modo sostenibile dopo tasse e oneri finanziari."}, "ROE (%)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [23.41, 26.04, 30.8, 31.83], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [-1.86, 15.07, 20.72, 18.89], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [18.45, 25.53, 34.14, 27.83], "color": "#0077b6"}], "median": 27.83, "fixed": 10.0, "direction": "above_good", "label": "Soglia min. 10%", "note": "Un ROE del 10% è comunemente usato come benchmark minimo per remunerare adeguatamente il capitale proprio degli azionisti. Valori inferiori indicano che l'azienda non genera valore per chi ha investito nel capitale."}, "ROA (%)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [16.42, 18.34, 22.24, 22.2], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [-0.59, 5.76, 9.48, 9.49], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [12.49, 17.03, 22.59, 16.52], "color": "#0077b6"}], "median": 16.52, "fixed": null, "direction": null, "label": null, "note": null}, "ROI / ROCE (%)": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [25.29, 26.29, 31.12, 26.2], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [3.99, 10.15, 15.4, 13.33], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [18.24, 23.65, 28.62, 25.69], "color": "#0077b6"}], "median": 25.69, "fixed": 8.0, "direction": "above_good", "label": "Soglia min. 8%", "note": "Il ROCE (Return on Capital Employed) dovrebbe superare il costo medio del capitale (WACC), stimato intorno al 7-9% per un OEM automobilistico europeo. Sotto l'8% l'azienda distrugge valore economico rispetto al capitale investito."}, "Debt/Equity": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [0.12, 0.1, 0.07, 0.14], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [0.96, 0.67, 0.46, 0.37], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [0.21, 0.24, 0.27, 0.39], "color": "#0077b6"}], "median": 0.37, "fixed": 2.0, "direction": "below_good", "label": "Soglia max. 2x", "note": "Un rapporto Debt/Equity superiore a 2 segnala una leva finanziaria elevata. Nel settore automotive, dove i cicli di investimento sono pesanti, valori oltre questa soglia aumentano significativamente il rischio di insolvenza in fasi di contrazione dei ricavi."}, "Current Ratio": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [2.38, 2.1, 1.84, 2.01], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [0.94, 1.05, 1.06, 1.05], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [2.2, 2.67, 2.98, 2.6], "color": "#0077b6"}], "median": 2.01, "fixed": 1.0, "direction": "above_good", "label": "Soglia min. 1x", "note": "Un Current Ratio inferiore a 1 significa che le passività a breve termine superano le attività correnti: l'azienda potrebbe non essere in grado di far fronte agli impegni finanziari nel breve periodo senza ricorrere a nuovi finanziamenti."}, "Interest Coverage": {"companies": [{"name": "Alphabet Inc.", "full": "Alphabet Inc.", "x": [2022, 2023, 2024, 2025], "y": [209.64, 273.68, 419.37, 175.32], "color": "#03045e"}, {"name": "Amazon.com, Inc.", "full": "Amazon.com, Inc.", "x": [2022, 2023, 2024, 2025], "y": [5.17, 11.58, 28.51, 35.17], "color": "#023e8a"}, {"name": "Meta Platforms, Inc.", "full": "Meta Platforms, Inc.", "x": [2022, 2023, 2024, 2025], "y": [156.45, 104.82, 97.03, 71.48], "color": "#0077b6"}], "median": 71.48, "fixed": null, "direction": null, "label": null, "note": null}};
+const INDICATORS = ["Revenue (M)", "EBIT (M)", "EBITDA (M)", "Net Income (M)", "EBIT Margin (%)", "EBITDA Margin (%)", "Net Margin (%)", "ROE (%)", "ROA (%)", "ROI / ROCE (%)", "Debt/Equity", "Current Ratio", "Interest Coverage"];
+const COMPANIES  = ["Alphabet Inc.", "Amazon.com, Inc.", "Meta Platforms, Inc."];
+
+// Popola il dropdown
+const sel = document.getElementById('indicator-select');
+INDICATORS.forEach(ind => {
+  const opt = document.createElement('option');
+  opt.value = ind;
+  opt.textContent = ind;
+  sel.appendChild(opt);
+});
+
+function updateChart() {
+  const indicator = sel.value;
+  const entry     = DATA[indicator];
+  if (!entry) return;
+
+  const traces = [];
+
+  // Trace per ogni azienda
+  entry.companies.forEach(co => {
+    traces.push({
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: co.name,
+      x: co.x,
+      y: co.y,
+      line:   { color: co.color, width: 2.5 },
+      marker: { color: co.color, size: 7 },
+      connectgaps: false,
+      hovertemplate: '<b>' + co.name + '</b><br>Anno: %{x}<br>Valore: %{y:.2f}<extra></extra>',
+    });
+  });
+
+  // Linea soglia fissa
+  if (entry.fixed !== null) {
+    const xMin = Math.min(...entry.companies.flatMap(c => c.x));
+    const xMax = Math.max(...entry.companies.flatMap(c => c.x));
+    traces.push({
+      type: 'scatter', mode: 'lines',
+      name: entry.label || 'Soglia fissa',
+      x: [xMin, xMax],
+      y: [entry.fixed, entry.fixed],
+      line: { color: '#e63946', width: 2, dash: 'dash' },
+      hovertemplate: 'Soglia fissa: ' + entry.fixed + '<extra></extra>',
+    });
+  }
+
+  // Linea mediana gruppo (tratteggiata arancione)
+  {
+    const xMin = Math.min(...entry.companies.flatMap(c => c.x));
+    const xMax = Math.max(...entry.companies.flatMap(c => c.x));
+    traces.push({
+      type: 'scatter', mode: 'lines',
+      name: 'Mediana gruppo: ' + entry.median,
+      x: [xMin, xMax],
+      y: [entry.median, entry.median],
+      line: { color: '#f4a261', width: 1.8, dash: 'dot' },
+      hovertemplate: 'Mediana: ' + entry.median + '<extra></extra>',
+    });
+  }
+
+  const layout = {
+    margin: { t: 40, r: 20, b: 60, l: 60 },
+    xaxis: {
+      title: 'Anno',
+      tickmode: 'array',
+      tickvals: [...new Set(entry.companies.flatMap(c => c.x))].sort(),
+      tickformat: 'd',
+      gridcolor: '#e8eef5',
+    },
+    yaxis: {
+      title: indicator,
+      gridcolor: '#e8eef5',
+      zeroline: true,
+      zerolinecolor: '#ccc',
+    },
+    legend: {
+      orientation: 'h', x: 0, y: -0.22,
+      font: { size: 11 },
+    },
+    plot_bgcolor:  'white',
+    paper_bgcolor: 'white',
+    hovermode: 'x unified',
+    font: { family: 'Segoe UI, Arial', size: 12 },
+  };
+
+  Plotly.newPlot('plotly-chart', traces, layout, {
+    responsive: true, displayModeBar: true,
+    modeBarButtonsToRemove: ['lasso2d','select2d'],
+  });
+
+  updateThresholdBox(entry, indicator);
+  updateStatusTable(entry, indicator);
+}
+
+function updateThresholdBox(entry, indicator) {
+  const box = document.getElementById('threshold-box');
+  let html = `<h3>📊 ${indicator}</h3><div class="badges">`;
+
+  if (entry.fixed !== null) {
+    const dir = entry.direction === 'above_good'
+      ? '≥ ' + entry.fixed + ' = positivo'
+      : '≤ ' + entry.fixed + ' = positivo';
+    html += `<span class="badge badge-fixed">Soglia fissa: ${entry.fixed} (${dir})</span>`;
+  } else {
+    html += `<span class="badge badge-none">Nessuna soglia fissa per questo indicatore</span>`;
+  }
+
+  html += `<span class="badge badge-median">Mediana gruppo: ${entry.median}</span>`;
+  html += `</div>`;
+
+  if (entry.note) {
+    html += `<p>${entry.note}</p>`;
+  }
+
+  box.innerHTML = html;
+}
+
+function updateStatusTable(entry, indicator) {
+  const tbody = document.getElementById('status-tbody');
+  tbody.innerHTML = '';
+
+  // Prendi l'ultimo anno per ogni azienda
+  entry.companies.forEach(co => {
+    const validPairs = co.x.map((yr, i) => [yr, co.y[i]])
+                           .filter(p => p[1] !== null && p[1] !== undefined);
+    if (!validPairs.length) return;
+
+    validPairs.sort((a,b) => b[0] - a[0]);
+    const [lastYear, lastVal] = validPairs[0];
+
+    // Stato vs soglia fissa
+    let statoFixed = '<span class="na">N/A</span>';
+    let isOk = null;
+    if (entry.fixed !== null) {
+      if (entry.direction === 'above_good') {
+        isOk = lastVal >= entry.fixed;
+      } else {
+        isOk = lastVal <= entry.fixed;
+      }
+      const op = entry.direction === 'above_good'
+        ? (lastVal >= entry.fixed ? '≥' : '<')
+        : (lastVal <= entry.fixed ? '≤' : '>');
+      statoFixed = `${lastVal.toFixed(2)} ${op} ${entry.fixed}`;
+    }
+
+    // Stato vs mediana
+    const vsMedian = lastVal - entry.median;
+    const vsMedianStr = (vsMedian >= 0 ? '+' : '') + vsMedian.toFixed(2);
+
+    // Icona stato
+    let statoIcon = '<span class="na">—</span>';
+    if (isOk === true)  statoIcon = '<span class="ok">✅ OK</span>';
+    if (isOk === false) statoIcon = '<span class="warn">⚠️ Attenzione</span>';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><b>${co.name}</b></td>
+      <td>${lastVal.toFixed(2)} <small style="color:#888">(${lastYear})</small></td>
+      <td>${statoFixed}</td>
+      <td>${vsMedianStr}</td>
+      <td>${statoIcon}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Inizializza con il primo indicatore
+updateChart();
+</script>
+</body>
+</html>
