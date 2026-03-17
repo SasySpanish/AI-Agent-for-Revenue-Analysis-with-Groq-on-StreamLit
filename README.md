@@ -27,10 +27,6 @@ generates interactive charts, and produces a written analyst report — all in o
 
 ## ↓↓↓
 
-![aa](results/img/C22.PNG)
-
-## ↓↓↓
-
 ![aa](results/img/C14.PNG)
 
 ## ↓↓↓
@@ -44,6 +40,10 @@ generates interactive charts, and produces a written analyst report — all in o
 ## ↓↓↓
 
 ![aa](results/img/C17.PNG)
+
+## ↓↓↓
+
+![aa](results/img/C22.PNG)
 
 ## ↓↓↓
 
