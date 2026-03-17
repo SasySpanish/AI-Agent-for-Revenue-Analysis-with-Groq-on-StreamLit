@@ -103,9 +103,9 @@ AI-Agent-for-Revenue-Analysis-with-Groq-on-StreamLit/
 ```
 
 > This app depends on two companion repositories as local packages:
-> - **[wheelhouse](https://github.com/YOUR_USERNAME/wheelhouse)** — core financial analysis
+> - **[revenuescript](revenuescript)** — Core financial analysis
 >   engine (data fetching, indicator calculation, charts)
-> - **[Revenue-AI-Agent-with-Ollama-and-Langchain](https://github.com/YOUR_USERNAME/Revenue-AI-Agent-with-Ollama-and-Langchain)** — tool definitions
+> - **[src](src)** — Agent tool definitions
 >   (ticker resolver, analysis runner, report generator)
 
 ---
