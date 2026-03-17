@@ -1,19 +1,23 @@
 # AI-Agent-for-Revenue-Analysis-with-Groq-on-StreamLit
 
-![aa](results/img/a1.PNG)
+![aa](results/img/C11.PNG)
 
 ## ↓↓↓
 
-![aa](results/img/a2.PNG)
+![aa](results/img/C1.PNG)
 
 ## ↓↓↓
 
-![aa](results/img/a3.PNG)
+![aa](results/img/C22.PNG)
 
 ## ↓↓↓
 
-![aa](results/img/a4.PNG)
+![aa](results/img/C2.PNG)
 
 ## ↓↓↓
 
-![aa](results/img/bdownload.PNG)
+![aa](results/img/C3.PNG)
+
+## ↓↓↓
+
+![aa](results/img/C4.PNG)
