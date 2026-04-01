@@ -1,8 +1,11 @@
 # 📊 AI Agent for Revenue Analysis with Groq on Streamlit
 
+## [Deployed App link here (beta)](https://revenueagentbeta.streamlit.app/)
+### [Github Repo link here](https://github.com/SasySpanish/Revenue_Agent_Streamlit) 
+
 A web-based financial analysis application powered by **llama-3.3-70b-versatile** via Groq,
 built with Streamlit. Enter a company name, sector keyword, or list of ticker symbols,
-and the agent automatically downloads financial data, computes fundamental indicators,
+and the agent automatically downloads financial data, computes fundamental revenue indicators,
 generates interactive charts, and produces a written analyst report — all in one click.
 
 ---
