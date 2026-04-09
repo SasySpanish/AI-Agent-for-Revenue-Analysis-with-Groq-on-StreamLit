@@ -1,4 +1,4 @@
-# 📊 AI Agent for Revenue Analysis with Groq on Streamlit
+# AI Agent for Revenue Analysis with Groq on Streamlit
 
 ## [Deployed App link here (beta)](https://revenueagentbeta.streamlit.app/)
 ### [Github Repo link here](https://github.com/SasySpanish/Revenue_Agent_Streamlit) 
@@ -62,7 +62,7 @@ generates interactive charts, and produces a written analyst report — all in o
 
 ---
 
-## 🧠 What it does
+## What it does
 
 1. **Resolves tickers** — maps natural language input (e.g. *"European banks"*, *"lusso"*,
    *"semiconductors"*) to valid Yahoo Finance ticker symbols using a built-in knowledge base
@@ -80,7 +80,7 @@ generates interactive charts, and produces a written analyst report — all in o
 
 ---
 
-## 🖥️ Interface
+## Interface
 
 The Streamlit UI includes:
 
@@ -95,7 +95,7 @@ The Streamlit UI includes:
 
 ---
 
-## 🗂️ Project structure
+## Project structure
 
 ```
 AI-Agent-for-Revenue-Analysis-with-Groq-on-StreamLit/
@@ -164,7 +164,7 @@ The app will open automatically at `http://localhost:8501`.
 
 ---
 
-## 💬 Supported input formats
+## Supported input formats
 
 | Input type | Example |
 |---|---|
@@ -176,7 +176,7 @@ The app will open automatically at `http://localhost:8501`.
 
 ---
 
-## 🌍 Sector presets
+## Sector presets
 
 | Keyword | Companies |
 |---|---|
@@ -194,7 +194,7 @@ The app will open automatically at `http://localhost:8501`.
 
 ---
 
-## 📊 Financial indicators computed
+## Financial indicators computed
 
 | Category | Indicators |
 |---|---|
@@ -208,7 +208,7 @@ The app will open automatically at `http://localhost:8501`.
 
 ---
 
-## 📂 Output files
+## Output files
 
 Each analysis run saves a dedicated folder inside `output_agent/`:
 
@@ -229,7 +229,7 @@ output_agent/
 
 ---
 
-## 🤖 LLM model
+## LLM model
 
 | Property | Value |
 |---|---|
@@ -240,7 +240,7 @@ output_agent/
 
 ---
 
-## ⚠️ Notes
+## Notes
 
 - Data is sourced from Yahoo Finance via `yfinance` for **educational / personal use only**
 - Absolute values are expressed in **millions** in the original reporting currency
@@ -249,7 +249,7 @@ output_agent/
 
 ---
 
-## 🔗 Related repositories
+## Related repositories
 
 | Repo | Role |
 |---|---|
@@ -259,7 +259,7 @@ output_agent/
 
 ---
 
-## 📌 Roadmap
+## Roadmap
 
 - [ ] Unified single-repo structure for cloud deployment
 - [ ] Streamlit Cloud / Render deploy
@@ -267,3 +267,9 @@ output_agent/
 - [ ] Web search integration for real-time news context
 - [ ] Competitor auto-discovery
 - [ ] Portfolio analysis mode
+
+## Author
+Developed by **[Salvatore Spagnuolo](https://github.com/SasySpanish)**  
+
+---
+
