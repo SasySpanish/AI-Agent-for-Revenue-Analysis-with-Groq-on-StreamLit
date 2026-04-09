@@ -261,12 +261,16 @@ output_agent/
 
 ## Roadmap
 
-- [ ] Unified single-repo structure for cloud deployment
-- [ ] Streamlit Cloud / Render deploy
+- [X] Unified single-repo structure for cloud deployment
+- [X] Streamlit Cloud / Render deploy
 - [ ] Conversational memory across prompts
 - [ ] Web search integration for real-time news context
 - [ ] Competitor auto-discovery
 - [ ] Portfolio analysis mode
+- [ ] Machine learning models
+- [ ] Price analysis
+
+---
 
 ## Author
 Developed by **[Salvatore Spagnuolo](https://github.com/SasySpanish)**  
